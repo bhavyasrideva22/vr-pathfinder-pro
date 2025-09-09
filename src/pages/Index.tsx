@@ -1,13 +1,50 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import AssessmentIntro from "@/components/AssessmentIntro";
+import AssessmentQuestions from "@/components/AssessmentQuestions";
+import AssessmentResults from "@/components/AssessmentResults";
+
+type AssessmentStep = 'intro' | 'questions' | 'results';
 
 const Index = () => {
+  const [currentStep, setCurrentStep] = useState<AssessmentStep>('intro');
+  const [responses, setResponses] = useState<Record<string, string>>({});
+
+  const handleStartAssessment = () => {
+    setCurrentStep('questions');
+  };
+
+  const handleBackToIntro = () => {
+    setCurrentStep('intro');
+  };
+
+  const handleCompleteAssessment = (assessmentResponses: Record<string, string>) => {
+    setResponses(assessmentResponses);
+    setCurrentStep('results');
+  };
+
+  const handleRestart = () => {
+    setResponses({});
+    setCurrentStep('intro');
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      {currentStep === 'intro' && (
+        <AssessmentIntro onStartAssessment={handleStartAssessment} />
+      )}
+      {currentStep === 'questions' && (
+        <AssessmentQuestions 
+          onComplete={handleCompleteAssessment}
+          onBack={handleBackToIntro}
+        />
+      )}
+      {currentStep === 'results' && (
+        <AssessmentResults 
+          responses={responses}
+          onRestart={handleRestart}
+        />
+      )}
+    </>
   );
 };
 
